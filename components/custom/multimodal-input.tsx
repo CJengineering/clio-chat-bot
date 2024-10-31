@@ -24,13 +24,13 @@ import { Textarea } from '../ui/textarea';
 
 const suggestedActions = [
   {
-    title: 'What is the weather',
-    label: 'in San Francisco?',
-    action: 'What is the weather in San Francisco?',
+    title: 'What is J-PAL',
+    label: 'Abdul Latif Jameel Poverty Action Lab',
+    action: 'What is the weather in Abdul Latif Jameel Poverty Action Lab ?',
   },
   {
-    title: 'Help me draft an essay',
-    label: 'about Silicon Valley',
+    title: 'Help me with any question related to J-PAL',
+    label: 'Abdul Latif Jameel Poverty Action Lab',
     action: 'Help me draft an essay about Silicon Valley',
   },
 ];

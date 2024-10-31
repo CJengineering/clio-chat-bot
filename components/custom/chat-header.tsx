@@ -10,6 +10,7 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
   return (
     <header className="flex h-16 sticky top-0 bg-background md:h-12 items-center px-2 md:px-2 z-10">
       <SidebarToggle />
+   
       <BetterTooltip content="New Chat">
         <Button
           variant="ghost"
