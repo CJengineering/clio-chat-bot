@@ -323,6 +323,9 @@ export async function POST(request: Request) {
     data: streamingData,
   });
 }
+export async function GET(request:Request){
+  return 'hello'
+}
 
 export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url);

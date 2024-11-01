@@ -27,22 +27,9 @@ export const Overview = () => {
           />
         </p>
         <p>
-          Jameel-CLIO is a domain knowledge specific chatbot focused on research
-          conducted by the Abdul Latif Jameel Poverty Action Lab (J-PAL) since
-          2003. The chatbot utilises OpenAI&lsquo;s ChatGPT 3.5 and adds a contextual
-          corpus of hundreds of J-PAL research papers.
+        Jameel-CLIO is a chatbot focused on research conducted by the Abdul Latif Jameel Poverty Action Lab (J-PAL). The chatbot utilises OpenAI&lsquo;s ChatGPT 3.5 and adds a contextual corpus of hundreds of J-PAL research papers.
         </p>
-        <p>
-        You can learn more about J-CLIO by contacting us {' '}
-          <Link
-            className="font-medium underline underline-offset-4"
-            href="https://www.communityjameel.org"
-            target="_blank"
-          >
-            here
-          </Link>
-          .
-        </p>
+      
       </div>
     </motion.div>
   );
