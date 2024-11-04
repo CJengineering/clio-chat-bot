@@ -26,12 +26,12 @@ const suggestedActions = [
   {
     title: 'What is J-PAL',
     label: 'Abdul Latif Jameel Poverty Action Lab',
-    action: 'What is the weather in Abdul Latif Jameel Poverty Action Lab ?',
+    action: 'What is   Abdul Latif Jameel Poverty Action Lab ?',
   },
   {
     title: 'Help me with any question related to J-PAL',
     label: 'Abdul Latif Jameel Poverty Action Lab',
-    action: 'Help me draft an essay about Silicon Valley',
+    action: 'Describe historicaly the Abdul Latif Jameel Poverty Action Lab',
   },
 ];
 

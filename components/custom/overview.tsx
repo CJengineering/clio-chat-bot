@@ -20,16 +20,22 @@ export const Overview = () => {
           <span>+</span>
           <MessageIcon size={100} /> */}
           <Image
-            src="/images/JPAL_LOGO_SVG.svg"
+            src="/images/CJ_LOGO_ENGLISH_RED_SVG copy.svg"
             alt={'J-Pal logo'}
             width={300}
             height={300}
           />
         </p>
-        <p>
-        Jameel-CLIO is a chatbot focused on research conducted by the Abdul Latif Jameel Poverty Action Lab (J-PAL). The chatbot utilises OpenAI&lsquo;s ChatGPT 3.5 and adds a contextual corpus of hundreds of J-PAL research papers.
+        <p className='text-left'>
+          Jameel-CLIO is a chatbot focused on research supported by Community
+          Jameel.<br />
+       
+          The chatbot utilises OpenAI&lsquo;s ChatGPT-4o mini and adds a
+          contextual corpus of hundreds of research papers.<br />
+       
+          Jameel-CLIO 1.0 engages research from the Abdul Latif Jameel Poverty
+          Action Lab (J-PAL).
         </p>
-      
       </div>
     </motion.div>
   );
