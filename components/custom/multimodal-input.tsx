@@ -173,7 +173,7 @@ export function MultimodalInput({
                 key={index}
                 className={index > 1 ? 'hidden sm:block' : 'block'}
               >
-                <Button
+                {/* <Button
                   variant="ghost"
                   onClick={async () => {
                     append({
@@ -187,7 +187,7 @@ export function MultimodalInput({
                   <span className="text-muted-foreground">
                     {suggestedAction.label}
                   </span>
-                </Button>
+                </Button> */}
               </motion.div>
             ))}
           </div>
