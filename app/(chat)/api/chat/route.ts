@@ -62,9 +62,14 @@ export async function POST(request: Request) {
   }
 
   async function getGoogleAccessToken(): Promise<string> {
+    const base64Encoded = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    if (!base64Encoded) {
+      throw new Error('GOOGLE_APPLICATION_CREDENTIALS not provided');
+    }
+    const decodedJson = Buffer.from(base64Encoded, 'base64').toString('utf-8');
     const auth = new GoogleAuth({
       credentials: JSON.parse(
-        process.env.GOOGLE_APPLICATION_CREDENTIALS || '{}'
+        decodedJson || '{}'
       ),
       scopes: ['https://www.googleapis.com/auth/cloud-platform'],
     });
