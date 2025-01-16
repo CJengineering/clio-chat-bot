@@ -68,9 +68,13 @@ export async function POST(request: Request) {
     }
     const decodedJson = Buffer.from(base64Encoded, 'base64').toString('utf-8');
     const auth = new GoogleAuth({
-      credentials: JSON.parse(
-        decodedJson || '{}'
-      ),
+      credentials: {
+        project_id: process.env.GOOGLE_PROJECT_ID,
+        private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
+        private_key: process.env.GOOGLE_PRIVATE_KEY,
+        client_email: process.env.GOOGLE_CLIENT_EMAIL,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+      },
       scopes: ['https://www.googleapis.com/auth/cloud-platform'],
     });
 
@@ -100,8 +104,6 @@ export async function POST(request: Request) {
       session:
         'projects/100166227581/locations/us/collections/default_collection/engines/clio-test-v1_1736522116878/sessions/-',
     };
-
-  
 
     try {
       const auth = new GoogleAuth({
