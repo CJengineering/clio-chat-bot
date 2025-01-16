@@ -96,8 +96,7 @@ export async function POST(request: Request) {
         'projects/100166227581/locations/us/collections/default_collection/engines/clio-test-v1_1736522116878/sessions/-',
     };
 
-    const ACCESS_TOKEN =
-      'ya29.a0ARW5m76Nby_yDxOsk4Vz25PAmrI1MhSMZqzGBUfTeHMMHewG2MVm5yEQ85OdtOSA6rjNO3S_3sWK_EE_MB2n1GBbYZ1gWVOspBbyOhDfwfAAi8FC6_OmVQaucu1P0UmKo1Qg0UQXsSU0jVzVd43lDJXeq-X4tl1b74Ryku9JSWdcuDbXaCgYKAfQSARMSFQHGX2Mir7QX1ymnuImyFNpQGxEL_Q0183';
+  
 
     try {
       const auth = new GoogleAuth({
