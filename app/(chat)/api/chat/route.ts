@@ -68,13 +68,11 @@ export async function POST(request: Request) {
     }
     const decodedJson = Buffer.from(base64Encoded, 'base64').toString('utf-8');
     const auth = new GoogleAuth({
-      credentials: {
-        project_id: process.env.GOOGLE_PROJECT_ID,
+      credentials: { project_id: process.env.GOOGLE_PROJECT_ID,
         private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
         private_key: process.env.GOOGLE_PRIVATE_KEY,
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
-        client_id: process.env.GOOGLE_CLIENT_ID,
-      },
+        client_id: process.env.GOOGLE_CLIENT_ID},
       scopes: ['https://www.googleapis.com/auth/cloud-platform'],
     });
 
@@ -105,21 +103,11 @@ export async function POST(request: Request) {
         'projects/100166227581/locations/us/collections/default_collection/engines/clio-test-v1_1736522116878/sessions/-',
     };
 
+  
+
     try {
-      const auth = new GoogleAuth({
-        credentials: JSON.parse(
-          process.env.GOOGLE_APPLICATION_CREDENTIALS || '{}'
-        ),
-        scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-      });
-
-      const client = await auth.getClient();
-      const tokenResponse = await client.getAccessToken();
-      const key = JSON.parse(
-        process.env.GOOGLE_APPLICATION_CREDENTIALS || '{}'
-      );
+    
       const token = await getGoogleAccessToken();
-
       const response = await axios.post(vertexEndpoint, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
