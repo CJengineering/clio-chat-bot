@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
   convertToCoreMessages,
   generateObject,
@@ -6,11 +7,17 @@ import {
   streamObject,
   streamText,
 } from 'ai';
-import { z } from 'zod';
 
+import { GoogleAuth } from 'google-auth-library';
+import { z } from 'zod';
 import { customModel } from '@/ai';
 import { models } from '@/ai/models';
-import { canvasPrompt, jpalPrompt, regularPrompt } from '@/ai/prompts';
+import {
+  canvasPrompt,
+  jpalPrompt,
+  jpalPromptV2,
+  regularPrompt,
+} from '@/ai/prompts';
 import { auth } from '@/app/(auth)/auth';
 import {
   deleteChatById,
@@ -20,6 +27,7 @@ import {
   saveDocument,
   saveSuggestions,
 } from '@/db/queries';
+
 import { Suggestion } from '@/db/schema';
 import { generateUUID, sanitizeResponseMessages } from '@/lib/utils';
 
@@ -53,18 +61,115 @@ export async function POST(request: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
+  async function getGoogleAccessToken(): Promise<string> {
+    const auth = new GoogleAuth({
+      credentials: JSON.parse(
+        process.env.GOOGLE_APPLICATION_CREDENTIALS || '{}'
+      ),
+      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+    });
+
+    const client = await auth.getClient();
+    const tokenResponse = await client.getAccessToken();
+
+    if (typeof tokenResponse !== 'string' && tokenResponse?.token) {
+      return tokenResponse.token;
+    } else if (typeof tokenResponse === 'string') {
+      return tokenResponse;
+    }
+
+    throw new Error('Failed to obtain a valid access token');
+  }
+
+  async function fetchFromVertexAI(query: string): Promise<string> {
+    const vertexEndpoint =
+      'https://us-discoveryengine.googleapis.com/v1alpha/projects/100166227581/locations/us/collections/default_collection/engines/clio-test-v1_1736522116878/servingConfigs/default_search:search';
+    const payload = {
+      query,
+      pageSize: 10,
+      queryExpansionSpec: { condition: 'AUTO' },
+      spellCorrectionSpec: { mode: 'AUTO' },
+      contentSearchSpec: {
+        extractiveContentSpec: { maxExtractiveAnswerCount: 1 },
+      },
+      session:
+        'projects/100166227581/locations/us/collections/default_collection/engines/clio-test-v1_1736522116878/sessions/-',
+    };
+
+    const ACCESS_TOKEN =
+      'ya29.a0ARW5m76Nby_yDxOsk4Vz25PAmrI1MhSMZqzGBUfTeHMMHewG2MVm5yEQ85OdtOSA6rjNO3S_3sWK_EE_MB2n1GBbYZ1gWVOspBbyOhDfwfAAi8FC6_OmVQaucu1P0UmKo1Qg0UQXsSU0jVzVd43lDJXeq-X4tl1b74Ryku9JSWdcuDbXaCgYKAfQSARMSFQHGX2Mir7QX1ymnuImyFNpQGxEL_Q0183';
+
+    try {
+      const auth = new GoogleAuth({
+        credentials: JSON.parse(
+          process.env.GOOGLE_APPLICATION_CREDENTIALS || '{}'
+        ),
+        scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+      });
+
+      const client = await auth.getClient();
+      const tokenResponse = await client.getAccessToken();
+      const key = JSON.parse(
+        process.env.GOOGLE_APPLICATION_CREDENTIALS || '{}'
+      );
+      const token = await getGoogleAccessToken();
+
+      const response = await axios.post(vertexEndpoint, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = response.data;
+      if (!data.results || data.results.length === 0) {
+        return 'No relevant information found in the documents.';
+      }
+
+      const extractiveAnswers = data.results
+        .flatMap(
+          (result: any) =>
+            result.document?.derivedStructData?.extractive_answers || []
+        )
+        .map((answer: any) => `Page ${answer.pageNumber}: ${answer.content}`)
+        .join('\n');
+
+      return (
+        extractiveAnswers || 'No relevant information found in the documents.'
+      );
+    } catch (error) {
+      console.error('Error querying Vertex AI:', error);
+      return 'Error retrieving document-based answers.';
+    }
+  }
+
   const model = models.find((model) => model.id === modelId);
 
   if (!model) {
     return new Response('Model not found', { status: 404 });
   }
 
-  const coreMessages = convertToCoreMessages(messages);
+  const userMessage =
+    messages.find((msg) => msg.role === 'user')?.content || '';
+  let vertexAnswer = '';
+  if (userMessage) {
+    vertexAnswer = await fetchFromVertexAI(userMessage);
+  }
+
+  // Step 2: Add the Vertex AI response as context for ChatGPT
+  const coreMessages = convertToCoreMessages([
+    ...messages,
+    {
+      role: 'assistant',
+      content: `Here is the document-based answer:\n${vertexAnswer}`,
+    },
+  ]);
   const streamingData = new StreamData();
+  const prompt = jpalPromptV2(vertexAnswer);
 
   const result = await streamText({
     model: customModel(model.apiIdentifier),
-    system: jpalPrompt,
+    system: prompt,
     messages: coreMessages,
     maxSteps: 5,
     experimental_activeTools:
@@ -323,7 +428,6 @@ export async function POST(request: Request) {
     data: streamingData,
   });
 }
-
 
 export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url);
